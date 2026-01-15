@@ -1,0 +1,103 @@
+name: Release MSIX
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+
+      - name: Locate solution and packaging project
+        shell: pwsh
+        run: |
+          $sln = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Filter *.sln | Select-Object -First 1
+          if (-not $sln) { throw "No .sln found in repo root." }
+          "SOLUTION_PATH=$($sln.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+          $wap = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.wapproj | Select-Object -First 1
+          if (-not $wap) { throw "No .wapproj found." }
+          "WAP_PATH=$($wap.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+          "WAP_DIR=$($wap.Directory.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+          $manifest = Join-Path $wap.Directory.FullName "Package.appxmanifest"
+          if (-not (Test-Path $manifest)) { throw "Package.appxmanifest not found next to wapproj." }
+          "MANIFEST_PATH=$manifest" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Decode signing certificate (PFX) from secrets
+        shell: pwsh
+        run: |
+          $pfxPath = Join-Path $env:WAP_DIR "ci-signing.pfx"
+          [IO.File]::WriteAllBytes($pfxPath, [Convert]::FromBase64String("${{ secrets.MSIX_PFX_BASE64 }}"))
+          "PFX_PATH=$pfxPath" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Set MSIX version from tag
+        shell: pwsh
+        run: |
+          $tag = "${{ github.ref_name }}"          # пример: v2.0.13.0 или v2.0.13.0-rc1
+          $v = $tag -replace '^v',''
+          $v = ($v -split '-')[0]                  # махаме -rc1 ако има
+          $parts = $v -split '\.'
+          if ($parts.Count -eq 3) { $v = "$v.0" }  # ако е 2.0.12 -> става 2.0.12.0
+
+          [xml]$manifest = Get-Content $env:MANIFEST_PATH
+          $manifest.Package.Identity.Version = $v
+          $manifest.Save($env:MANIFEST_PATH)
+
+          Write-Host "MSIX Version set to $v in $env:MANIFEST_PATH"
+          "MSIX_VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Restore
+        shell: pwsh
+        run: |
+          msbuild "$env:SOLUTION_PATH" /t:Restore /p:Configuration=Release
+
+      - name: Build & Package MSIX (wapproj)
+        shell: pwsh
+        run: |
+          $outDir = Join-Path $env:GITHUB_WORKSPACE "artifacts\AppPackages\"
+          New-Item -ItemType Directory -Force -Path $outDir | Out-Null
+
+          msbuild "$env:WAP_PATH" `
+            /p:Configuration=Release `
+            /p:Platform=x64 `
+            /p:UapAppxPackageBuildMode=SideLoadOnly `
+            /p:AppxBundle=Always `
+            /p:AppxPackageSigningEnabled=true `
+            /p:PackageCertificateKeyFile="$env:PFX_PATH" `
+            /p:PackageCertificatePassword="${{ secrets.MSIX_PFX_PASSWORD }}" `
+            /p:GenerateAppInstallerFile=false `
+            /p:AppxAutoIncrementPackageRevision=false `
+            /p:AppxPackageDir="$outDir"
+
+      - name: Zip AppPackages
+        shell: pwsh
+        run: |
+          $zip = Join-Path $env:GITHUB_WORKSPACE "PhotoFlow.AppPackages.${{ github.ref_name }}.zip"
+          Compress-Archive -Path (Join-Path $env:GITHUB_WORKSPACE "artifacts\AppPackages\*") -DestinationPath $zip -Force
+          "ZIP_PATH=$zip" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: MSIX-AppPackages
+          path: artifacts/AppPackages/
+
+      - name: Create/Update GitHub Release and upload assets
+        uses: softprops/action-gh-release@v2
+        with:
+          prerelease: ${{ contains(github.ref_name, '-rc') }}
+          generate_release_notes: true
+          files: |
+            ${{ env.ZIP_PATH }}
