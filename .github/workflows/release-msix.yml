@@ -19,7 +19,7 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-            - name: Locate packaging project
+      - name: Locate packaging project
         shell: pwsh
         run: |
           $wap = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.wapproj | Select-Object -First 1
@@ -31,7 +31,6 @@ jobs:
           $manifest = Join-Path $wap.Directory.FullName "Package.appxmanifest"
           if (-not (Test-Path $manifest)) { throw "Package.appxmanifest not found next to wapproj." }
           "MANIFEST_PATH=$manifest" | Out-File -FilePath $env:GITHUB_ENV -Append
-
 
       - name: Decode signing certificate (PFX) from secrets
         shell: pwsh
@@ -56,11 +55,10 @@ jobs:
           Write-Host "MSIX Version set to $v in $env:MANIFEST_PATH"
           "MSIX_VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-            - name: Restore
+      - name: Restore
         shell: pwsh
         run: |
           msbuild "$env:WAP_PATH" /t:Restore /p:Configuration=Release /p:Platform=x64
-
 
       - name: Build & Package MSIX (wapproj)
         shell: pwsh
