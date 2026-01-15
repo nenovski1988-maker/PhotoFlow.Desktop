@@ -23,7 +23,7 @@ jobs:
         shell: pwsh
         run: |
           $sln = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.sln | Select-Object -First 1
-if (-not $sln) { throw "No .sln found in repo (recursive search)." }
+          if (-not $sln) { throw "No .sln found in repo (recursive search)." }
 
           "SOLUTION_PATH=$($sln.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
 
