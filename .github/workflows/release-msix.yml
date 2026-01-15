@@ -19,22 +19,19 @@ jobs:
       - name: Setup MSBuild
         uses: microsoft/setup-msbuild@v2
 
-      - name: Locate solution and packaging project
+            - name: Locate packaging project
         shell: pwsh
         run: |
-          $sln = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.sln | Select-Object -First 1
-          if (-not $sln) { throw "No .sln found in repo (recursive search)." }
-
-          "SOLUTION_PATH=$($sln.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
-
           $wap = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.wapproj | Select-Object -First 1
           if (-not $wap) { throw "No .wapproj found." }
+
           "WAP_PATH=$($wap.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
           "WAP_DIR=$($wap.Directory.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
 
           $manifest = Join-Path $wap.Directory.FullName "Package.appxmanifest"
           if (-not (Test-Path $manifest)) { throw "Package.appxmanifest not found next to wapproj." }
           "MANIFEST_PATH=$manifest" | Out-File -FilePath $env:GITHUB_ENV -Append
+
 
       - name: Decode signing certificate (PFX) from secrets
         shell: pwsh
@@ -59,10 +56,11 @@ jobs:
           Write-Host "MSIX Version set to $v in $env:MANIFEST_PATH"
           "MSIX_VERSION=$v" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Restore
+            - name: Restore
         shell: pwsh
         run: |
-          msbuild "$env:SOLUTION_PATH" /t:Restore /p:Configuration=Release
+          msbuild "$env:WAP_PATH" /t:Restore /p:Configuration=Release /p:Platform=x64
+
 
       - name: Build & Package MSIX (wapproj)
         shell: pwsh
