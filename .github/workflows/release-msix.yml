@@ -22,8 +22,9 @@ jobs:
       - name: Locate solution and packaging project
         shell: pwsh
         run: |
-          $sln = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Filter *.sln | Select-Object -First 1
-          if (-not $sln) { throw "No .sln found in repo root." }
+          $sln = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.sln | Select-Object -First 1
+if (-not $sln) { throw "No .sln found in repo (recursive search)." }
+
           "SOLUTION_PATH=$($sln.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
 
           $wap = Get-ChildItem -Path $env:GITHUB_WORKSPACE -Recurse -Filter *.wapproj | Select-Object -First 1
