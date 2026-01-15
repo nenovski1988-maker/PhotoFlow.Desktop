@@ -8,7 +8,7 @@
 
   <Identity
     Name="0b9861d4-da2b-4fd8-93f7-be1f88989c8d"
-    Publisher="CN=CN-PhotoFlow"
+    Publisher="CN=PhotoFlowTest"
     Version="2.0.12.0" />
 
   <Properties>

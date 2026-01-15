@@ -57,7 +57,7 @@
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
     <NoWarn>$(NoWarn);NU1702</NoWarn>
     <EntryPointProjectUniqueName>..\PhotoFlow.Desktop\PhotoFlow.Desktop.csproj</EntryPointProjectUniqueName>
-    <PackageCertificateThumbprint>91B8596314CDC1E2B132B8BEDA9650063C73A910</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>59B5E554817237E5D7CA8C6C8DFFDE32A8998A85</PackageCertificateThumbprint>
     <GenerateAppInstallerFile>True</GenerateAppInstallerFile>
     <AppxPackageSigningTimestampDigestAlgorithm>SHA256</AppxPackageSigningTimestampDigestAlgorithm>
     <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
