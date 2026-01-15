@@ -1,0 +1,13 @@
+# Build output
+**/bin/
+**/obj/
+**/.vs/
+
+# Secrets / certificates
+**/*.pfx
+**/*.snk
+**/*.key
+
+# User-specific VS files
+*.user
+*.suo

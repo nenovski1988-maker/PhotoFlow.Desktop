@@ -1,0 +1,6 @@
+<Project>
+	<PropertyGroup>
+		<!-- Generate restore assets for these RIDs so MSIX packaging doesn't fail -->
+		<RuntimeIdentifiers>win-x64;win-x86</RuntimeIdentifiers>
+	</PropertyGroup>
+</Project>

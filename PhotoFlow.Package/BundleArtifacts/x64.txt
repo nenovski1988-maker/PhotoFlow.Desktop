@@ -1,0 +1,1 @@
+MainPackage=D:\PhotoFlow.Desktop\PhotoFlow.Package\bin\x64\Release\PhotoFlow.Package_2.0.12.0_x64.msix

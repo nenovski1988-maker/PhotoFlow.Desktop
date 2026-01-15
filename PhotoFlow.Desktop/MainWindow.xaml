@@ -1,0 +1,324 @@
+﻿<Window x:Class="PhotoFlow.Desktop.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="PhotoFlow" Height="780" Width="1200"
+        WindowStartupLocation="CenterScreen"
+        Background="Black" BorderBrush="#FF1F714B" Foreground="Black">
+
+    <Window.Resources>
+        <!-- Colors -->
+        <SolidColorBrush x:Key="CardBg" Color="#151922"/>
+        <SolidColorBrush x:Key="CardBorder" Color="#262C3A"/>
+        <SolidColorBrush x:Key="TextPrimary" Color="#E8EDF7"/>
+        <SolidColorBrush x:Key="TextMuted" Color="#9AA6BD"/>
+        <SolidColorBrush x:Key="Accent" Color="#34D399"/>
+
+        <!-- Base text -->
+        <Style TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+        </Style>
+
+        <!-- Card border -->
+        <Style TargetType="Border" x:Key="Card">
+            <Setter Property="Background" Value="{StaticResource CardBg}"/>
+            <Setter Property="BorderBrush" Value="{StaticResource CardBorder}"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="CornerRadius" Value="14"/>
+            <Setter Property="Padding" Value="14"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
+
+        <!-- Buttons (subtle) -->
+        <Style TargetType="Button">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Background" Value="#1B2130"/>
+            <Setter Property="BorderBrush" Value="#2A3246"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="Height" Value="34"/>
+            <Setter Property="Cursor" Value="Hand"/>
+        </Style>
+
+        <!-- TextBox -->
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Background" Value="#0F131C"/>
+            <Setter Property="BorderBrush" Value="#2A3246"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,6"/>
+            <Setter Property="MinHeight" Value="34"/>
+
+        </Style>
+
+        <!-- ComboBox -->
+        <Style TargetType="ComboBox">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Background" Value="#0F131C"/>
+            <Setter Property="BorderBrush" Value="#2A3246"/>
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="Padding" Value="10,4"/>
+            <Setter Property="Height" Value="34"/>
+        </Style>
+
+        <!-- ListBox -->
+        <Style TargetType="ListBox">
+            <Setter Property="Background" Value="#0F131C"/>
+            <Setter Property="BorderBrush" Value="#2A3246"/>
+            <Setter Property="BorderThickness" Value="1"/>
+        </Style>
+
+        <!-- CheckBox -->
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource TextPrimary}"/>
+            <Setter Property="Margin" Value="0,6,0,0"/>
+        </Style>
+    </Window.Resources>
+
+    <Grid Margin="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <!-- Top bar -->
+        <Grid Grid.Row="0" Margin="0,0,0,12">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="Auto"/>
+            </Grid.ColumnDefinitions>
+
+            <StackPanel>
+                <TextBlock x:Name="LicenseStatusText" FontWeight="SemiBold" FontSize="14"/>
+                <TextBlock x:Name="FoldersStatusText" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+            </StackPanel>
+
+            <Button Grid.Column="1" Content="Folders" Width="120" Click="Settings_Click">
+                <Button.Background>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="Black"/>
+                        <GradientStop Color="#FF0B583F" Offset="1"/>
+                    </LinearGradientBrush>
+                </Button.Background>
+            </Button>
+        </Grid>
+
+        <!-- Main content (vertical scroll, never cuts) -->
+        <ScrollViewer Grid.Row="1"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled"
+                      PanningMode="VerticalOnly">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="2.2*"/>
+                    <ColumnDefinition Width="2.2*"/>
+                    <ColumnDefinition Width="3.2*"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="*"/>
+                </Grid.RowDefinitions>
+
+                <!-- LEFT: Active + Recent -->
+                <Border Grid.Column="0" Grid.Row="0" Style="{StaticResource Card}">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black" Offset="1"/>
+                            <GradientStop Color="#FF123011" Offset="0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.BorderBrush>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black" Offset="1"/>
+                            <GradientStop Color="#FF21703B" Offset="0"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    <StackPanel>
+                        <TextBlock Text="Active Product" FontWeight="SemiBold" FontSize="14"/>
+                        <TextBlock Text="Scan or enter barcode" Foreground="{StaticResource TextMuted}" Margin="0,8,0,4"/>
+                        <TextBox x:Name="BarcodeTextBox" KeyDown="BarcodeTextBox_KeyDown" Background="#FF222E2F">
+                            <TextBox.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="Black" Offset="1"/>
+                                    <GradientStop Color="#FF155323" Offset="0"/>
+                                </LinearGradientBrush>
+                            </TextBox.BorderBrush>
+                        </TextBox>
+
+                        <TextBlock Text="Product name (optional)" Foreground="{StaticResource TextMuted}" Margin="0,10,0,4"/>
+                        <TextBox x:Name="ProductNameTextBox" Background="#FF222E2F">
+                            <TextBox.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="Black" Offset="1"/>
+                                    <GradientStop Color="#FF155323" Offset="0"/>
+                                </LinearGradientBrush>
+                            </TextBox.BorderBrush>
+                        </TextBox>
+
+                        <TextBlock x:Name="ActiveSessionText" Margin="0,12,0,0" FontWeight="SemiBold"/>
+                        <TextBlock x:Name="ActiveFramesText" Foreground="{StaticResource TextMuted}" Margin="0,4,0,0"/>
+                    </StackPanel>
+                </Border>
+
+                <Border Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" Margin="0,12,0,0" Style="{StaticResource Card}">
+
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black"/>
+                            <GradientStop Color="#FF123011" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.BorderBrush>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black"/>
+                            <GradientStop Color="#FF168A30" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Recent products" FontWeight="SemiBold" FontSize="14"/>
+                        <ListBox x:Name="RecentListBox" Margin="0,12,0,0" Background="#FF222E2F">
+                            <ListBox.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="Black"/>
+                                    <GradientStop Color="#FF3D7A4F" Offset="1"/>
+                                </LinearGradientBrush>
+                            </ListBox.BorderBrush>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+
+                <!-- MIDDLE: Exports -->
+                <Border Grid.Row="1" Style="{StaticResource Card}" Margin="5,12,0,0" Grid.RowSpan="2" Grid.Column="1">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black"/>
+                            <GradientStop Color="#FF123011" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.BorderBrush>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black"/>
+                            <GradientStop Color="#FF278533" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top">
+                            <TextBlock Text="Export Formats" FontWeight="SemiBold" FontSize="14"/>
+                            <TextBlock Text="Select what to generate for each incoming photo"
+                                       Foreground="{StaticResource TextMuted}" Margin="0,6,0,0"/>
+                            <Button Content="Reset to defaults" Margin="0,12,0,0" Click="ResetExports_Click">
+                                <Button.Background>
+                                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                        <GradientStop Color="Black"/>
+                                        <GradientStop Color="#FF0B583F" Offset="1"/>
+                                    </LinearGradientBrush>
+                                </Button.Background>
+                            </Button>
+                        </StackPanel>
+
+                        <ListBox x:Name="ExportsListBox" Margin="0,12,0,0" Background="#FF222E2F">
+                            <ListBox.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="Black"/>
+                                    <GradientStop Color="#FF3D7A4F" Offset="1"/>
+                                </LinearGradientBrush>
+                            </ListBox.BorderBrush>
+                            <ListBox.ItemTemplate>
+                                <DataTemplate>
+                                    <CheckBox Content="{Binding DisplayName}"
+                                              IsChecked="{Binding IsSelected, Mode=TwoWay}"
+                                              Checked="ExportCheckBox_Changed"
+                                              Unchecked="ExportCheckBox_Changed"/>
+                                </DataTemplate>
+                            </ListBox.ItemTemplate>
+                        </ListBox>
+                    </DockPanel>
+                </Border>
+
+                <!-- RIGHT TOP: Thumbnails -->
+                <Border Grid.Row="0" Style="{StaticResource Card}" Grid.ColumnSpan="2" Margin="5,0,0,0" Grid.Column="1">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black" Offset="1"/>
+                            <GradientStop Color="#FF123011" Offset="0"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.BorderBrush>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black" Offset="1"/>
+                            <GradientStop Color="#FF17872E" Offset="0"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    <DockPanel>
+                        <StackPanel DockPanel.Dock="Top">
+                            <TextBlock Text="Processed Thumbnails" FontWeight="SemiBold" FontSize="14"/>
+                            <TextBlock Text="(active product only) — click a thumbnail to preview/reprocess"
+                                       Foreground="{StaticResource TextMuted}" Margin="0,6,0,0"/>
+                        </StackPanel>
+
+                        <ScrollViewer Margin="0,12,0,0" VerticalScrollBarVisibility="Auto">
+                            <ItemsControl ItemsSource="{Binding Thumbnails}">
+                                <ItemsControl.ItemsPanel>
+                                    <ItemsPanelTemplate>
+                                        <WrapPanel IsItemsHost="True" />
+                                    </ItemsPanelTemplate>
+                                </ItemsControl.ItemsPanel>
+
+                                <ItemsControl.ItemTemplate>
+                                    <DataTemplate>
+                                        <Button Click="Thumb_Click"
+                                                Margin="0,0,10,10"
+                                                Padding="0"
+                                                Width="130"
+                                                Height="95"
+                                                Background="#0F131C"
+                                                BorderBrush="#2A3246"
+                                                BorderThickness="1">
+                                            <Grid ClipToBounds="True">
+                                                <Image Source="{Binding Source}"
+                                                       Stretch="Uniform"
+                                                       RenderOptions.BitmapScalingMode="HighQuality"/>
+                                            </Grid>
+                                        </Button>
+                                    </DataTemplate>
+                                </ItemsControl.ItemTemplate>
+                            </ItemsControl>
+                        </ScrollViewer>
+                    </DockPanel>
+                </Border>
+
+                <!-- RIGHT BOTTOM: Log -->
+                <Border Grid.Column="2" Grid.Row="1" Style="{StaticResource Card}" Margin="5,12,0,0" Grid.RowSpan="2">
+                    <Border.Background>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black"/>
+                            <GradientStop Color="#FF123011" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.Background>
+                    <Border.BorderBrush>
+                        <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                            <GradientStop Color="Black"/>
+                            <GradientStop Color="#FF129830" Offset="1"/>
+                        </LinearGradientBrush>
+                    </Border.BorderBrush>
+                    <DockPanel>
+                        <TextBlock DockPanel.Dock="Top" Text="Log" FontWeight="SemiBold" FontSize="14"/>
+                        <TextBox x:Name="LogTextBox" Margin="0,12,0,0"
+                                 AcceptsReturn="True"
+                                 VerticalScrollBarVisibility="Auto"
+                                 Background="#FF222E2F"
+                                 BorderThickness="1"
+                                 Foreground="{StaticResource TextPrimary}">
+                            <TextBox.BorderBrush>
+                                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                                    <GradientStop Color="Black"/>
+                                    <GradientStop Color="#FF3D7A4F" Offset="1"/>
+                                </LinearGradientBrush>
+                            </TextBox.BorderBrush>
+                        </TextBox>
+                    </DockPanel>
+                </Border>
+            </Grid>
+        </ScrollViewer>
+    </Grid>
+</Window>

@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<AppInstaller
+	Uri="file:///D:/PhotoFlow.Desktop/PhotoFlow.Package/AppPackages/Installer/PhotoFlow.Package.appinstaller"
+	Version="2.0.12.0" xmlns="http://schemas.microsoft.com/appx/appinstaller/2017/2">
+	<MainBundle
+		Name="0b9861d4-da2b-4fd8-93f7-be1f88989c8d"
+		Version="2.0.12.0"
+		Publisher="CN=CN-PhotoFlow"
+		Uri="file:///D:/PhotoFlow.Desktop/PhotoFlow.Package/AppPackages/Installer/PhotoFlow.Package_2.0.12.0_Test/PhotoFlow.Package_2.0.12.0_x64.msixbundle" />
+	<UpdateSettings>
+		<OnLaunch
+			HoursBetweenUpdateChecks="0" />
+	</UpdateSettings>
+</AppInstaller>

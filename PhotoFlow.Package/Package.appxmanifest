@@ -1,0 +1,50 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<Package
+  xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10"
+  xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10"
+  xmlns:rescap="http://schemas.microsoft.com/appx/manifest/foundation/windows10/restrictedcapabilities"
+  IgnorableNamespaces="uap rescap">
+
+  <Identity
+    Name="0b9861d4-da2b-4fd8-93f7-be1f88989c8d"
+    Publisher="CN=CN-PhotoFlow"
+    Version="2.0.12.0" />
+
+  <Properties>
+    <DisplayName>PhotoFlow.Package</DisplayName>
+    <PublisherDisplayName>miro</PublisherDisplayName>
+    <Logo>Images\StoreLogo.png</Logo>
+  </Properties>
+
+  <Dependencies>
+    <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
+    <TargetDeviceFamily Name="Windows.Desktop" MinVersion="10.0.14393.0" MaxVersionTested="10.0.14393.0" />
+  </Dependencies>
+
+  <Resources>
+    <Resource Language="x-generate"/>
+  </Resources>
+
+	<Applications>
+		<Application Id="PhotoFlow"
+					 Executable="$targetnametoken$.exe"
+					 EntryPoint="$targetentrypoint$">
+			<uap:VisualElements
+				DisplayName="PhotoFlow"
+				Description="PhotoFlow"
+				BackgroundColor="transparent"
+				Square150x150Logo="Images\Square150x150Logo.png"
+				Square44x44Logo="Images\Square44x44Logo.png">
+				<uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png"
+								 Square310x310Logo="Images\Square310x310Logo.png" />
+			</uap:VisualElements>
+		</Application>
+	</Applications>
+
+
+	<Capabilities>
+    <Capability Name="internetClient" />
+    <rescap:Capability Name="runFullTrust" />
+  </Capabilities>
+</Package>

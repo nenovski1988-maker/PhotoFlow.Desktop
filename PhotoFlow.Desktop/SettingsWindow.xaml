@@ -1,0 +1,95 @@
+﻿<Window x:Class="PhotoFlow.Desktop.SettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Folders"
+        Height="360"
+        Width="920"
+        WindowStartupLocation="CenterOwner" Background="Black">
+
+    <Grid Margin="16">
+        <!-- Wrap everything in a MainWindow-like card -->
+        <Border Style="{StaticResource GreenCard}">
+            <Grid Margin="14">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="12"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+
+                <StackPanel Grid.Row="0">
+                    <TextBlock Text="Folders" FontWeight="SemiBold" FontSize="20"/>
+                    <TextBlock Text="Choose workspace + incoming folders"
+                               Style="{StaticResource MutedText}"
+                               Margin="0,6,0,0"/>
+                </StackPanel>
+
+                <Grid Grid.Row="2" Margin="0,8,0,0">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto"/>
+                        <RowDefinition Height="10"/>
+                        <RowDefinition Height="Auto"/>
+                    </Grid.RowDefinitions>
+
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="220"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="140"/>
+                    </Grid.ColumnDefinitions>
+
+                    <TextBlock Grid.Row="0" Grid.Column="0"
+                               Text="Workspace root"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource MutedText}"/>
+
+                    <TextBox Grid.Row="0" Grid.Column="1"
+                             x:Name="WorkspaceTextBox"
+                             Style="{StaticResource GreenInput}"
+                             Margin="0,0,12,0"/>
+
+                    <Button Grid.Row="0" Grid.Column="2"
+                            Content="Browse..."
+                            Style="{StaticResource AccentButton}"
+                            Click="BrowseWorkspace_Click"/>
+
+                    <TextBlock Grid.Row="2" Grid.Column="0"
+                               Text="Incoming folder"
+                               VerticalAlignment="Center"
+                               Style="{StaticResource MutedText}"/>
+
+                    <TextBox Grid.Row="2" Grid.Column="1"
+                             x:Name="IncomingTextBox"
+                             Style="{StaticResource GreenInput}"
+                             Margin="0,0,12,0"/>
+
+                    <Button Grid.Row="2" Grid.Column="2"
+                            Content="Browse..."
+                            Style="{StaticResource AccentButton}"
+                            Click="BrowseIncoming_Click"/>
+                </Grid>
+
+                <TextBlock Grid.Row="3"
+                           TextWrapping="Wrap"
+                           Style="{StaticResource MutedText}"
+                           Margin="0,14,0,0">
+                    <Run Text="* Workspace root contains processed/exports folders per barcode. Incoming folder is watched for new JPEG files. Changing these while a session is active will restart folder watching."/>
+                </TextBlock>
+
+                <StackPanel Grid.Row="4"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Left"
+                            Margin="0,18,0,0">
+                    <Button Content="Save"
+                            Width="120"
+                            Style="{StaticResource AccentButton}"
+                            Click="Save_Click"
+                            Margin="0,0,12,0"/>
+                    <Button Content="Cancel"
+                            Width="120"
+                            Click="Cancel_Click"/>
+                </StackPanel>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>
