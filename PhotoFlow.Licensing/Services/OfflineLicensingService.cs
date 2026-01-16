@@ -82,10 +82,6 @@ internal static class LicenseVerifier
             "PhotoFlow", "Licenses", "photoflow.license.json"
         );
 
-    // Тук е photoflow_lic_public.b64 (една линия, без нови редове)
-    private const string PublicKeyB64 =
-        "MIIBojANBgkqhkiG9w0BAQEFAAOCAY8AMIIBigKCAYEAqpp05LNm4YHA2uRvjqreviFCXpo8fAx25k9deTZYDSEY6id/eszqCuSj0FbMAExLmC2Vhsiwct0vyUMKtY0AoWGiw6ncKEoPVXIL7NmMkhdJJgtbpuwlRRqb437C01stH7pedT38cRZJGfbzPV3G5ln7OxB42EVk1sC58Ejm9bneENfDIQ23XA6tn+fTS5GWAyrT7DXzg+6sZlZkTw0IzpcvTlM7cQmXCEdRCCyDPaDVyrRe5nRFZ0dGZ+gVDcwbduB+O7rqyImwn2dIMGJo6t9onfYuJS88o/PW2jN2Mhdv+gif2+GvFLY2H9gfhzeQCITM8eYMmLIlxMUm+I70ee2f9B/XcnKY2+PGWnf929tE30XMgYs30INDfxA2o1no463Hk97rN6B7yZcEWFld7wx9mMMbhSC/c87mCQcq1pTsOJ8ELWwtY6z5/KXzo2nSFt2ApJ819LZoAj8Cqp8F1pEuTduGsjwU/W/W+8DPJsvf9sMlPdxW7m1KWxvcKJRpAgMBAAE=";
-
     private static string NormalizeType(string? t)
     {
         var type = string.IsNullOrWhiteSpace(t) ? "LICENSE" : t.Trim().ToUpperInvariant();
@@ -155,10 +151,22 @@ internal static class LicenseVerifier
 
     private static bool VerifySignature(byte[] payloadBytes, byte[] sigBytes)
     {
-        var pubDer = Convert.FromBase64String(PublicKeyB64);
+        // Търсим public key PEM файл до приложението:
+        // <exe folder>\Keys\license-public.pem
+        var baseDir = AppContext.BaseDirectory;
+        var pemPath = Path.Combine(baseDir, "Keys", "license-public.pem");
+
+        // Fallback: ако някой го сложи директно до exe-то
+        if (!File.Exists(pemPath))
+            pemPath = Path.Combine(baseDir, "license-public.pem");
+
+        if (!File.Exists(pemPath))
+            return false;
+
+        var pubPem = File.ReadAllText(pemPath, Encoding.ASCII);
 
         using var rsa = RSA.Create();
-        rsa.ImportSubjectPublicKeyInfo(pubDer, out _);
+        rsa.ImportFromPem(pubPem);
 
         return rsa.VerifyData(
             payloadBytes,

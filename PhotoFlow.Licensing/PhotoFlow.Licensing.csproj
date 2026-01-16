@@ -7,4 +7,14 @@
     <Platforms>AnyCPU;x64</Platforms>
   </PropertyGroup>
 
+  <ItemGroup>
+    <None Remove="keys\license-public.pem" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="keys\license-public.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+
 </Project>

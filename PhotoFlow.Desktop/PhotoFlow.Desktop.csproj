@@ -11,6 +11,13 @@
 
   <ItemGroup>
     <None Remove="Directory.Build.props" />
+    <None Remove="Keys\license-public.pem" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Keys\license-public.pem">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

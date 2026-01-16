@@ -15,6 +15,7 @@
   <Project Path="../PhotoFlow.Licensing/PhotoFlow.Licensing.csproj">
     <Platform Solution="*|x64" Project="x64" />
   </Project>
+  <Project Path="../PhotoFlow.LicensingServer/PhotoFlow.LicensingServer.csproj" Id="9b1783af-95f0-4356-9729-68fe309473b5" />
   <Project Path="../PhotoFlow.Package/PhotoFlow.Package.wapproj" Type="c7167f0d-bc9f-4e6e-afe1-012c56b48db5" Id="62cbaed6-6da8-43fa-99d9-48440aa78306">
     <Deploy />
   </Project>
