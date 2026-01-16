@@ -106,9 +106,18 @@ public partial class MainWindow : Window
         Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
         "PhotoFlow", "Licenses", "photoflow.license.json");
 
-    _licensing = File.Exists(licPath)
-        ? new OfflineLicensingService()
-        : new DevLicensingService();
+#if DEBUG
+        var devUnlock = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "PhotoFlow", "dev.unlock"
+        );
+        _licensing = File.Exists(devUnlock)
+            ? new DevLicensingService()
+            : new OfflineLicensingService();
+#else
+_licensing = new OfflineLicensingService();
+#endif
+
 #else
         // Release/MSIX: винаги Offline
         _licensing = new OfflineLicensingService();
