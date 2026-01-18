@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Threading.Tasks;
 using System.Windows;
 using PhotoFlow.Licensing.Services;
 using PhotoFlow.Licensing.Trial;
@@ -9,8 +10,11 @@ namespace PhotoFlow.Desktop;
 public partial class App : Application
 {
     protected override async void OnStartup(StartupEventArgs e)
-
     {
+        // 0) Splash screen (показва се веднага)
+        var splash = new SplashScreen("Assets/splash.png");
+        splash.Show(autoClose: false);
+
         base.OnStartup(e);
 
         var licensePath = Path.Combine(
@@ -27,15 +31,27 @@ public partial class App : Application
             try
             {
                 var trialClient = new TrialClient();
-                var env = await trialClient.StartTrialAsync();
 
+                // 5 секунди timeout: ако сървърът/мрежата “виси”, продължаваме без да чакаме безкрайно
+                var trialTask = trialClient.StartTrialAsync();
+                var completed = await Task.WhenAny(trialTask, Task.Delay(TimeSpan.FromSeconds(5)));
 
-                if (env != null)
+                if (completed == trialTask)
                 {
-                    TrialLicenseWriter.SaveEnvelopeAsLicenseFile(env);
+                    // Task е приключил в рамките на 5 сек.
+                    var env = await trialTask;
 
-                    // Презареждаме лиценза след запис
-                    licensing = new OfflineLicensingService();
+                    if (env != null)
+                    {
+                        TrialLicenseWriter.SaveEnvelopeAsLicenseFile(env);
+
+                        // Презареждаме лиценза след запис
+                        licensing = new OfflineLicensingService();
+                    }
+                }
+                else
+                {
+                    // Timeout -> не правим нищо, ще падне към блокиращия прозорец по-долу
                 }
             }
             catch
@@ -51,6 +67,8 @@ public partial class App : Application
             var w = new LicenseBlockedWindow(licensing.GetStatusText(), licensePath);
             MainWindow = w;
             w.Show();
+
+            splash.Close(TimeSpan.FromMilliseconds(200));
             return;
         }
 
@@ -58,5 +76,7 @@ public partial class App : Application
         var main = new MainWindow();
         MainWindow = main;
         main.Show();
+
+        splash.Close(TimeSpan.FromMilliseconds(200));
     }
 }

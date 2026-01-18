@@ -7,9 +7,13 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <UseWPF>true</UseWPF>
     <Platforms>AnyCPU;x64</Platforms>
+	  <ApplicationIcon>Assets\PhotoFlow.ico</ApplicationIcon>
+
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Assets\PhotoFlow.ico" />
+    <None Remove="Assets\splash.png" />
     <None Remove="Directory.Build.props" />
     <None Remove="Keys\license-public.pem" />
   </ItemGroup>
@@ -32,6 +36,13 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Assets\PhotoFlow.ico" />
+    <Resource Include="Assets\splash.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </Resource>
+  </ItemGroup>
+
+  <ItemGroup>
     <Page Update="ProductPreviewWindow.xaml">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Page>
@@ -39,6 +50,7 @@
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Page>
   </ItemGroup>
+	
 
 
 </Project>
