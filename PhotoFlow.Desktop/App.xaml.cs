@@ -1,6 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Threading.Tasks;
 using System.Windows;
 using PhotoFlow.Licensing.Services;
 using PhotoFlow.Licensing.Trial;
@@ -9,7 +8,11 @@ namespace PhotoFlow.Desktop;
 
 public partial class App : Application
 {
-    protected override async void OnStartup(StartupEventArgs e)
+    // Полезно за watermark-и и UI (можеш да го четеш от всякъде: App.IsTrial, App.TrialDaysLeft)
+    public static bool IsTrial { get; private set; }
+    public static int TrialDaysLeft { get; private set; }
+
+    protected override void OnStartup(StartupEventArgs e)
     {
         // 0) Splash screen (показва се веднага)
         var splash = new SplashScreen("Assets/splash.png");
@@ -22,49 +25,43 @@ public partial class App : Application
             "PhotoFlow", "Licenses", "photoflow.license.json"
         );
 
-        // 1) Проверка на лиценз (платен или вече съществуващ trial)
+        // 1) Проверка на платен лиценз
         var licensing = new OfflineLicensingService();
 
-        // 2) Ако няма валиден лиценз -> опитай да вземеш TRIAL от сървъра и да го запишеш
+        IsTrial = false;
+        TrialDaysLeft = 0;
+
+        // 2) Ако няма валиден платен лиценз -> offline trial (14 дни)
         if (!licensing.IsValid())
         {
             try
             {
-                var trialClient = new TrialClient();
+                var st = OfflineTrialStore.LoadOrCreate(trialDays: 14);
+                var now = DateTimeOffset.UtcNow;
 
-                // 5 секунди timeout: ако сървърът/мрежата “виси”, продължаваме без да чакаме безкрайно
-                var trialTask = trialClient.StartTrialAsync();
-                var completed = await Task.WhenAny(trialTask, Task.Delay(TimeSpan.FromSeconds(5)));
-
-                if (completed == trialTask)
+                if (now <= st.ExpiresUtc)
                 {
-                    // Task е приключил в рамките на 5 сек.
-                    var env = await trialTask;
-
-                    if (env != null)
-                    {
-                        TrialLicenseWriter.SaveEnvelopeAsLicenseFile(env);
-
-                        // Презареждаме лиценза след запис
-                        licensing = new OfflineLicensingService();
-                    }
-                }
-                else
-                {
-                    // Timeout -> не правим нищо, ще падне към блокиращия прозорец по-долу
+                    IsTrial = true;
+                    TrialDaysLeft = Math.Max(0, (int)Math.Ceiling((st.ExpiresUtc - now).TotalDays));
                 }
             }
             catch
             {
-                // Няма интернет / сървърът не е наличен / TLS проблем и т.н.
-                // Оставяме да падне към блокиращия прозорец.
+                // Trial файл повреден или засечен clock rollback -> третираме като изтекъл trial
+                IsTrial = false;
+                TrialDaysLeft = 0;
             }
         }
 
-        // 3) Ако пак няма валиден лиценз -> блокиращ екран и край
-        if (!licensing.IsValid())
+        // 3) Ако няма валиден платен лиценз И няма активен trial -> блокиращ екран
+        if (!licensing.IsValid() && !IsTrial)
         {
-            var w = new LicenseBlockedWindow(licensing.GetStatusText(), licensePath);
+            var status = licensing.GetStatusText();
+
+            // По желание можеш да добавиш по-ясно съобщение:
+            // status += "\nTrial expired or unavailable.";
+
+            var w = new LicenseBlockedWindow(status, licensePath);
             MainWindow = w;
             w.Show();
 
@@ -72,7 +69,7 @@ public partial class App : Application
             return;
         }
 
-        // 4) Има валиден лиценз (paid или trial) -> нормален старт
+        // 4) Има валиден платен лиценз ИЛИ активен trial -> нормален старт
         var main = new MainWindow();
         MainWindow = main;
         main.Show();
