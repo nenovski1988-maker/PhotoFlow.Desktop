@@ -1,7 +1,7 @@
 ﻿<Window x:Class="PhotoFlow.Desktop.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="PhotoFlow" Height="780" Width="1200"
+        Title="ShotFactory" Height="780" Width="1200"
         WindowStartupLocation="CenterScreen"
         Background="Black" BorderBrush="#FF1F714B" Foreground="Black">
 

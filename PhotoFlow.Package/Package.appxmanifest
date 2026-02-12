@@ -8,8 +8,8 @@
 
   <Identity
     Name="0b9861d4-da2b-4fd8-93f7-be1f88989c8d"
-    Publisher="CN=PhotoFlowTest"
-    Version="2.0.12.0" />
+    Publisher="CN=Miroslav Nenovski, O=Miroslav Nenovski, L=Gabrovo, S=Gabrovo Province, C=BG"
+    Version="2.0.17.2" />
 
   <Properties>
     <DisplayName>PhotoFlow.Package</DisplayName>
@@ -31,13 +31,15 @@
 					 Executable="$targetnametoken$.exe"
 					 EntryPoint="$targetentrypoint$">
 			<uap:VisualElements
-				DisplayName="PhotoFlow"
-				Description="PhotoFlow"
+				DisplayName="ShotFactory"
+				Description="Scan, Drop, Done"
 				BackgroundColor="transparent"
 				Square150x150Logo="Images\Square150x150Logo.png"
 				Square44x44Logo="Images\Square44x44Logo.png">
 				<uap:DefaultTile Wide310x150Logo="Images\Wide310x150Logo.png"
-								 Square310x310Logo="Images\Square310x310Logo.png" />
+								 Square310x310Logo="Images\Square310x310Logo.png"  Square71x71Logo="Images\SmallTile.png"/>
+				<uap:SplashScreen Image="Images\SplashScreen.png"/>
+				<uap:LockScreen BadgeLogo="Images\BadgeLogo.png" Notification="badge"/>
 			</uap:VisualElements>
 		</Application>
 	</Applications>

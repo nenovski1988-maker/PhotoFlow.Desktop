@@ -12,3 +12,8 @@
 *.user
 *.suo
 /4444/
+**/AppPackages/
+**/BundleArtifacts/
+Releases/
+*.zip
+**/*.assets.cache
